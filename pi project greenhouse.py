@@ -9,7 +9,7 @@ import adafruit_bh1750
 i2c = board.I2C()
 
 # Link the sensors to the I2C connection
-bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c)
+bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c, address=0x76)
 bh1750 = adafruit_bh1750.BH1750(i2c)
 
 # --- 2. Set up the LEDs ---
