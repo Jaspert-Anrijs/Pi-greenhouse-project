@@ -8,10 +8,10 @@ import paho.mqtt.client as mqtt
 # --- 1. ThingSpeak MQTT Credentials ---
 # PASTE YOUR DETAILS FROM THINGSPEAK HERE:
 MQTT_BROKER = "mqtt3.thingspeak.com"
-CHANNEL_ID = "YOUR_CHANNEL_ID"       # Just the numbers, e.g., "1234567"
-MQTT_CLIENT_ID = "YOUR_CLIENT_ID"    # From the MQTT popup
-MQTT_USERNAME = "YOUR_USERNAME"      # From the MQTT popup
-MQTT_PASSWORD = "YOUR_PASSWORD"      # From the MQTT popup
+CHANNEL_ID = "3306069"       # Just the numbers, e.g., "1234567"
+MQTT_CLIENT_ID = "BhcSAS0xLCI5MBIqFy08NAA"    # From the MQTT popup
+MQTT_USERNAME = "mwa0000040847643"      # From the MQTT popup
+MQTT_PASSWORD = "Yeehaw69"      # From the MQTT popup
 
 # --- 2. Hardware Setup ---
 i2c = board.I2C()
