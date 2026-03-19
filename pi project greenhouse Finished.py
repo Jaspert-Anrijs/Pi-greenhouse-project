@@ -10,8 +10,8 @@ import paho.mqtt.client as mqtt
 MQTT_BROKER = "mqtt3.thingspeak.com"
 CHANNEL_ID = "3306069"       # Just the numbers, e.g., "1234567"
 MQTT_CLIENT_ID = "BhcSAS0xLCI5MBIqFy08NAA"    # From the MQTT popup
-MQTT_USERNAME = "mr1049550@student.thomasmore.be"      # From the MQTT popup
-MQTT_PASSWORD = "Yeehaw69"      # From the MQTT popup
+MQTT_USERNAME = "BhcSAS0xLCI5MBIqFy08NAA"      # From the MQTT popup
+MQTT_PASSWORD = "OTD/og5K+OpZstVtxUYV/qy5"      # From the MQTT popup
 
 # --- 2. Hardware Setup ---
 i2c = board.I2C()
