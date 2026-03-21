@@ -43,18 +43,18 @@ btn_down = Button(24, pull_up=True)
 # 3. DOELWAARDEN & KNOPPEN LOGICA
 # ==========================================
 target_temp = 25.0
-target_lux = 200.0
+target_lux = 300.0
 
 def increase_targets():
     global target_temp, target_lux
     target_temp += 1.0
-    target_lux += 50.0
+    target_lux += 25
     print(f"\n[INSTELLINGEN] Doel Temp: {target_temp}C | Doel Lux: {target_lux}")
 
 def decrease_targets():
     global target_temp, target_lux
     target_temp -= 1.0
-    target_lux -= 50.0
+    target_lux -= 25.0
     print(f"\n[INSTELLINGEN] Doel Temp: {target_temp}C | Doel Lux: {target_lux}")
 
 btn_up.when_pressed = increase_targets
