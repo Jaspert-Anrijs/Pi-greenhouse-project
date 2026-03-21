@@ -88,7 +88,7 @@ try:
         # C. Send to ThingSpeak
         # The payload format MUST be field1=...&field2=...
         payload = f"field1={current_temp:.2f}&field2={current_lux:.2f}&field3={target_temp}&field4={target_lux}"
-        topic = f"channels/{CHANNEL_ID}/publish"
+        topic = f"channels/{CHANNEL_ID}/publish/{MQTT_USERNAME}"
         
         client.publish(topic, payload)
         print("--> Data sent to ThingSpeak!")
