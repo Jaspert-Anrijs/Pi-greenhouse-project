@@ -8,9 +8,9 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 # --- 1. InfluxDB Setup ---
 # PASTE YOUR INFLUXDB DETAILS HERE:
-URL = "https://eu-central-1-1.aws.cloud2.influxdata.com" # Replace with your exact URL
-TOKEN = "YOUR_API_TOKEN"
-ORG = "YOUR_16_CHARACTER_ORG_ID"
+URL = "https://us-east-1-1.aws.cloud2.influxdata.com" # Replace with your exact URL
+TOKEN = "JH5pxxMV3zYwNuu3YeUhomf29b3GVMXnQGPkRpIbQkbJFjRE3aB-djrKsjc3y6H7aZ_zC9i4fjqMz34xIGsadQ=="
+ORG = "3acd0f7e84aa93fD"
 BUCKET = "greenhouse"
 
 # Connect to the database
