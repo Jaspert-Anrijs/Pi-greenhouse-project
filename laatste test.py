@@ -10,9 +10,9 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 # ==========================================
 # 1. INFLUXDB INSTELLINGEN
 # ==========================================
-URL = "https://eu-central-1-1.aws.cloud2.influxdata.com" # Check of dit jouw URL is!
-TOKEN = "JOUW_INFLUXDB_TOKEN_HIER"
-ORG = "JOUW_16_TEKENS_ORG_ID_HIER"
+URL = "https://us-east-1-1.aws.cloud2.influxdata.com" # Check of dit jouw URL is!
+TOKEN = "JH5pxxMV3zYwNuu3YeUhomf29b3GVMXnQGPkRpIbQkbJFjRE3aB-djrKsjc3y6H7aZ_zC9i4fjqMz34xIGsadQ=="
+ORG = "3acd0f7e84aa93fD"
 BUCKET = "greenhouse"
 
 # Verbind met InfluxDB
