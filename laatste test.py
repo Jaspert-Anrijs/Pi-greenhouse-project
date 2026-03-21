@@ -29,11 +29,11 @@ bh1750 = adafruit_bh1750.BH1750(i2c)
 
 # Twee gewone LEDs (voor de licht-simulatie) op GPIO 17 en 18
 led1 = PWMLED(17)             
-led2 = PWMLED(18)
+led2 = PWMLED(16)
 
 # Slimme RGB LED (WS2812/APA106) op GPIO 21 (Data in)
 # We gebruiken auto_write=False zodat we zelf bepalen wanneer hij van kleur wisselt
-status_led = neopixel.NeoPixel(board.D21, 1, brightness=0.5, auto_write=False)
+status_led = neopixel.NeoPixel(board.D18, 1, brightness=0.5, auto_write=False, pixel_order=neopixel.RGB)
 
 # Knoppen op GPIO 23 en 24
 btn_up = Button(23, pull_up=True)
