@@ -12,6 +12,7 @@ CHANNEL_ID = "3306069"       # Just the numbers, e.g., "1234567"
 MQTT_CLIENT_ID = "BhcSAS0xLCI5MBIqFy08NAA"    # From the MQTT popup
 MQTT_USERNAME = "BhcSAS0xLCI5MBIqFy08NAA"      # From the MQTT popup
 MQTT_PASSWORD = "OTD/og5K+OpZstVtxUYV/qy5"      # From the MQTT popup
+WRITE_API_KEY = "UDW4PP63CWCMUSX1"
 
 # --- 2. Hardware Setup ---
 i2c = board.I2C()
@@ -87,7 +88,7 @@ try:
 
         # C. Send to ThingSpeak
         # The payload format MUST be field1=...&field2=...
-        payload = f"field1={current_temp:.2f}&field2={current_lux:.2f}&field3={target_temp}&field4={target_lux}"
+        payload = f"api_key={WRITE_API_KEY}&field1={current_temp:.2f}&field2={current_lux:.2f}&field3={target_temp}&field4={target_lux}"
         topic = f"channels/{CHANNEL_ID}/publish/{MQTT_USERNAME}"
         
         client.publish(topic, payload)
