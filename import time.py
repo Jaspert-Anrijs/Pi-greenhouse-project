@@ -142,9 +142,12 @@ try:
         draw.text((0, 32), f"Licht: {current_lux:.0f}lx (Doel: {target_lux})", font=font, fill=255)
         
         if heater_status == 1:
-            draw.text((0, 48), "Status: VERWARMEN", font=font, fill=255)
+            # HEATING: Draw a solid white box, then put black text inside it
+            draw.rectangle((0, 46, 128, 64), fill=255) 
+            draw.text((5, 48), "STATUS: HEATING", font=font, fill=0) # fill=0 is black!
         else:
-            draw.text((0, 48), "Status: KOELEN", font=font, fill=255)
+            # COOLING: Normal text, no box
+            draw.text((5, 48), "STATUS: COOLING", font=font, fill=255)
         
         # 3. Stuur het getekende plaatje naar het fysieke scherm
         oled.image(image)
