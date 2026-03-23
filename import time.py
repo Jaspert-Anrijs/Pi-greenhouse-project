@@ -33,7 +33,7 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 spi = busio.SPI(board.SCK, MOSI=board.MOSI)
 dc_pin = digitalio.DigitalInOut(board.D22)
 reset_pin = digitalio.DigitalInOut(board.D25)
-cs_pin = digitalio.DigitalInOut(board.D8) # Spook-pin voor 6-pin schermpjes
+cs_pin = digitalio.DigitalInOut(board.D4) # Veranderd naar D4 omdat D8 bezet is door hardware SPI
 
 # Maak het scherm aan (128x64 is de standaard resolutie)
 oled = adafruit_ssd1306.SSD1306_SPI(128, 64, spi, dc_pin, reset_pin, cs_pin)
