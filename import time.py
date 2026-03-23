@@ -43,6 +43,11 @@ image = Image.new("1", (oled.width, oled.height))
 draw = ImageDraw.Draw(image)
 font = ImageFont.load_default()
 
+from gpiozero import DigitalOutputDevice
+
+# active_high=False zorgt ervoor dat de relais netjes UIT staat als de Pi opstart
+heater = DigitalOutputDevice(27, active_high=False)
+
 # I2C Sensoren
 i2c = board.I2C()
 bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c, address=0x76)
@@ -120,7 +125,13 @@ try:
             current_brightness = 0.0
 
         print(f"Actueel: {current_temp:.1f}C, {current_lux:.1f} Lux | Doel: {target_temp}C, {target_lux} Lux")
-
+        
+        if current_temp < target_temp:
+            heater.on()  # KLIK! Relais gaat aan, weerstand wordt warm
+            heater_status = 1
+        else:
+            heater.off() # KLIK! Relais gaat uit, weerstand koelt af
+            heater_status = 0
 # E. Update het OLED Scherm
         # 1. Maak het canvas eerst helemaal leeg (zwarte rechthoek)
         draw.rectangle((0, 0, oled.width, oled.height), outline=0, fill=0)
