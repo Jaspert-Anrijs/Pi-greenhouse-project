@@ -69,7 +69,7 @@ btn_down = Button(24, pull_up=True)
 # 3. DOELWAARDEN & KNOPPEN LOGICA
 # ==========================================
 target_temp = 25.0
-target_lux = 300.0
+target_lux = 800.0
 
 def increase_targets():
     global target_temp, target_lux
