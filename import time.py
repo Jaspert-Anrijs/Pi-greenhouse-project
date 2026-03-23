@@ -33,7 +33,7 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 spi = busio.SPI(board.SCK, MOSI=board.MOSI)
 dc_pin = digitalio.DigitalInOut(board.D22)
 reset_pin = digitalio.DigitalInOut(board.D25)
-cs_pin = digitalio.DigitalInOut(board.D4) # Veranderd naar D4 omdat D8 bezet is door hardware SPI
+cs_pin = digitalio.DigitalInOut(board.D4) # Veranderd naar D4 omdat D8 bezet is door hardware SPI   
 
 # Maak het scherm aan (128x64 is de standaard resolutie)
 oled = adafruit_ssd1306.SSD1306_SPI(128, 64, spi, dc_pin, reset_pin, cs_pin)
@@ -133,7 +133,7 @@ try:
         if heater_status == 1:
             draw.text((0, 48), "Status: VERWARMEN", font=font, fill=255)
         else:
-            draw.text((0, 48), "Status: KOELEN/OK", font=font, fill=255)
+            draw.text((0, 48), "Status: KOELEN", font=font, fill=255)
         
         # 3. Stuur het getekende plaatje naar het fysieke scherm
         oled.image(image)
