@@ -106,29 +106,50 @@ try:
         if current_temp < target_temp:
             heater.on()
             cooler.off()
-            status_led.fill((255, 0, 0)) 
+            # Stuur (Groen, Rood, Blauw). Dus voor Rood zetten we het middelste getal op 255!
+            status_led.fill((0, 255, 0)) 
             heater_status = 1
             status_text = "VERWARMEN"
         elif current_temp > target_temp + 0.5:
             heater.off()
             cooler.on()
-            status_led.fill((0, 0, 255)) 
+            status_led.fill((0, 0, 255)) # Blauw blijft hetzelfde
             heater_status = -1
             status_text = "KOELEN"
         else:
             heater.off()
             cooler.off()
-            status_led.fill((0, 255, 0)) 
+            # Voor Groen zetten we nu het eerste getal op 255!
+            status_led.fill((255, 0, 0)) 
             heater_status = 0
             status_text = "OPTIMAAL"
 
-        # C. Licht Controle 
+       # C. Licht Controle (Proportioneel dimmen met PWM)
         if current_lux < target_lux:
-            led1.value = 1.0 
-            led2.value = 1.0
+            # 1. Bereken hoeveel lux we tekortkomen
+            lux_verschil = target_lux - current_lux
+            
+            # 2. Bepaal bij welk tekort de lampen op volle 100% moeten branden
+            # (Bijvoorbeeld: als we 500 lux tekortkomen, moeten ze vol aan)
+            max_lux_verschil = 500.0 
+            
+            # 3. Bereken de sterkte (een getal tussen 0.0 en 1.0)
+            dim_waarde = lux_verschil / max_lux_verschil
+            
+            # 4. Veiligheidscheck: zorg dat hij nooit boven de 1.0 (100%) probeert te gaan
+            if dim_waarde > 1.0:
+                dim_waarde = 1.0
+                
+            # 5. Zet de groeilampen aan op de berekende sterkte
+            led1.value = dim_waarde
+            led2.value = dim_waarde
         else:
-            led1.value = 0.0 
+            # Het is al licht genoeg in de broeikas!
+            led1.value = 0.0
             led2.value = 0.0
+            
+        # Bereken het percentage voor op het scherm en InfluxDB
+        led_percentage = int(led1.value * 100)
             
         led_percentage = int(led1.value * 100)
 
