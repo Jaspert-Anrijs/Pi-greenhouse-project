@@ -15,10 +15,10 @@ import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 # Vul hier jouw eigen InfluxDB gegevens in:
-URL = "https://us-east-1-1.aws.cloud2.influxdata.com" # Check of dit jouw URL is!
-TOKEN = "JH5pxxMV3zYwNuu3YeUhomf29b3GVMXnQGPkRpIbQkbJFjRE3aB-djrKsjc3y6H7aZ_zC9i4fjqMz34xIGsadQ=="
-ORG = "3acd0f7e84aa93fD"
-BUCKET = "greenhouse"
+INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com" # Of het IP-adres van je InfluxDB server
+INFLUX_TOKEN = "JH5pxxMV3zYwNuu3YeUhomf29b3GVMXnQGPkRpIbQkbJFjRE3aB-djrKsjc3y6H7aZ_zC9i4fjqMz34xIGsadQ=="
+INFLUX_ORG = "3acd0f7e84aa93fD"
+INFLUX_BUCKET = "greenhouse"
 
 # Maak de InfluxDB client aan
 client = influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
