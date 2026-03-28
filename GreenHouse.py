@@ -120,4 +120,73 @@ try:
             cooler.off()
             status_led.fill((0, 255, 0)) 
             heater_status = 0
-            status_text =
+            status_text = "OPTIMAAL"
+
+        # C. Licht Controle 
+        if current_lux < target_lux:
+            led1.value = 1.0 
+            led2.value = 1.0
+        else:
+            led1.value = 0.0 
+            led2.value = 0.0
+            
+        led_percentage = int(led1.value * 100)
+
+        # D. OLED Scherm Updaten
+        draw.rectangle((0, 0, oled.width, oled.height), outline=0, fill=0) 
+        draw.text((0, 0), "GREENHOUSE DASHBOARD", font=font, fill=255)
+        
+        if current_mode == "TEMP":
+            draw.text((0, 14), f"> Temp: {current_temp:.1f}C (Doel: {target_temp})", font=font, fill=255)
+            draw.text((0, 26), f"  Licht: {current_lux:.0f}lx (Doel: {target_lux})", font=font, fill=255)
+        else:
+            draw.text((0, 14), f"  Temp: {current_temp:.1f}C (Doel: {target_temp})", font=font, fill=255)
+            draw.text((0, 26), f"> Licht: {current_lux:.0f}lx (Doel: {target_lux})", font=font, fill=255)
+        
+        draw.text((0, 40), f"LED:{led_percentage}%", font=font, fill=255)
+        draw.rectangle((45, 40, 128, 50), outline=255, fill=0)
+        vul_breedte = int((led_percentage / 100.0) * (128 - 45))
+        if vul_breedte > 0:
+            draw.rectangle((45, 40, 45 + vul_breedte, 50), outline=255, fill=255)
+        
+        if heater_status == 1:
+            draw.rectangle((0, 52, 128, 64), fill=255) 
+            draw.text((5, 54), f"STATUS: {status_text}", font=font, fill=0) 
+        else:
+            draw.text((5, 54), f"STATUS: {status_text}", font=font, fill=255)
+        
+        oled.image(image)
+        oled.show()
+
+        # E. Terminal Output (NIEUW!)
+        print(f"[Modus: {current_mode}] Temp: {current_temp:.1f}°C ({target_temp}) | Lux: {current_lux} ({target_lux}) | LED: {led_percentage}% | Klimaat: {status_text}")
+
+        # F. Data naar InfluxDB sturen
+        try:
+            point = influxdb_client.Point("klimaat") \
+                .field("temperatuur", float(current_temp)) \
+                .field("lux", float(current_lux)) \
+                .field("doel_temp", float(target_temp)) \
+                .field("doel_lux", float(target_lux)) \
+                .field("led_percentage", float(led_percentage)) \
+                .field("heater_status", int(heater_status))
+            
+            write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
+        except Exception:
+            pass # We negeren de Influx error in de terminal zodat hij niet volloopt als er geen internet is
+
+        time.sleep(1)
+
+# ==========================================
+# 4. VEILIG AFSLUITEN (CTRL+C)
+# ==========================================
+except KeyboardInterrupt:
+    print("\nProgramma gestopt. Alles wordt veilig uitgeschakeld...")
+    heater.off()
+    cooler.off()
+    led1.off()
+    led2.off()
+    status_led.fill((0, 0, 0))
+    oled.fill(0)
+    oled.show()
+    print("Klaar! Succes!")
