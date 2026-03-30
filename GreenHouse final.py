@@ -28,6 +28,17 @@ try:
     print("✅ Succesvol verbonden met Cloud MQTT Broker!")
 except:
     print("❌ Kon niet verbinden met MQTT Broker.")
+    import influxdb_client
+from influxdb_client.client.write_api import SYNCHRONOUS
+
+INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com" 
+INFLUX_TOKEN = "JH5pxxMV3zYwNuu3YeUhomf29b3GVMXnQGPkRpIbQkbJFjRE3aB-djrKsjc3y6H7aZ_zC9i4fjqMz34xIGsadQ=="
+INFLUX_ORG = "3acd0f7e84aa93fD"
+INFLUX_BUCKET = "greenhouse"
+
+client = influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
+write_api = client.write_api(write_options=SYNCHRONOUS)
+
 # ==========================================
 # 1. HARDWARE INSTELLINGEN
 # ==========================================
