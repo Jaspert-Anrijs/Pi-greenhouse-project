@@ -15,9 +15,9 @@ from gpiozero import Button, PWMLED, DigitalOutputDevice
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-INFLUX_URL = "http://localhost:8086" 
-INFLUX_TOKEN = "JOUW_INFLUXDB_TOKEN_HIER"
-INFLUX_ORG = "jouw-org"
+INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com" 
+INFLUX_TOKEN = "JH5pxxMV3zYwNuu3YeUhomf29b3GVMXnQGPkRpIbQkbJFjRE3aB-djrKsjc3y6H7aZ_zC9i4fjqMz34xIGsadQ=="
+INFLUX_ORG = "3acd0f7e84aa93fD"
 INFLUX_BUCKET = "greenhouse"
 
 client = influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
