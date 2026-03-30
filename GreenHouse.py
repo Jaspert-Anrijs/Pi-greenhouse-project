@@ -99,7 +99,7 @@ try:
     while True:
         # A. Sensoren Uitlezen
         current_temp = bmp280.temperature
-        current_lux = bh1750.lux
+        current_lux = int(bh1750.lux)
         status_text = "OPTIMAAL"
 
         # B. Klimaat Controle
@@ -200,4 +200,3 @@ except KeyboardInterrupt:
     status_led.fill((0, 0, 0))
     oled.fill(0)
     oled.show()
-    print("Klaar!")
