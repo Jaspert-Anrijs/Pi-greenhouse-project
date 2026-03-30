@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 from gpiozero import Button, PWMLED, DigitalOutputDevice
 
 # ==========================================
-# 0. INFLUXDB INSTELLINGEN (Voor Grafana)
+# 0. INFLUXDB INSTELLINGEN
 # ==========================================
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -50,7 +50,7 @@ btn_mode = Button(12, pull_up=False)
 btn_down = Button(24, pull_up=False)
 
 # ==========================================
-# 2. VARIABELEN EN FUNCTIES (KNOPPEN)
+# 2. VARIABELEN EN FUNCTIES
 # ==========================================
 current_mode = "TEMP"
 target_temp = 20.0
@@ -68,19 +68,19 @@ def toggle_mode():
 def value_up():
     global target_temp, target_lux
     if current_mode == "TEMP":
-        target_temp += 0.5
+        target_temp += 0.25
         print(f"+++ Doel Temperatuur: {target_temp}°C")
     elif current_mode == "LUX":
-        target_lux += 50
+        target_lux += 25
         print(f"+++ Doel Licht: {target_lux} lx")
 
 def value_down():
     global target_temp, target_lux
     if current_mode == "TEMP":
-        target_temp -= 0.5
+        target_temp -= 0.25
         print(f"--- Doel Temperatuur: {target_temp}°C")
     elif current_mode == "LUX":
-        target_lux -= 50
+        target_lux -= 25
         print(f"--- Doel Licht: {target_lux} lx")
 
 btn_mode.when_pressed = toggle_mode
@@ -88,63 +88,51 @@ btn_up.when_pressed = value_up
 btn_down.when_pressed = value_down
 
 # ==========================================
-# 3. HOOFDPROGRAMMA (DE LOOP)
+# 3. HOOFDPROGRAMMA 
 # ==========================================
-print("================================================")
-print("🌱 Slimme Broeikas Opgestart!")
+print("Slimme Broeikas Opgestart!")
 print("Druk op CTRL+C om veilig af te sluiten.")
-print("================================================\n")
 
 try:
     while True:
         # A. Sensoren Uitlezen
         current_temp = bmp280.temperature
-        current_lux = 400 # Testwaarde, pas aan naar je eigen sensor
+        current_lux = 400
         status_text = "OPTIMAAL"
 
         # B. Klimaat Controle
         if current_temp < target_temp:
             heater.on()
             cooler.off()
-            # Stuur (Groen, Rood, Blauw). Dus voor Rood zetten we het middelste getal op 255!
+            # Stuur (Groen, Rood, Blauw)
             status_led.fill((0, 255, 0)) 
             heater_status = 1
             status_text = "VERWARMEN"
         elif current_temp > target_temp + 0.5:
             heater.off()
             cooler.on()
-            status_led.fill((0, 0, 255)) # Blauw blijft hetzelfde
+            status_led.fill((0, 0, 255))
             heater_status = -1
             status_text = "KOELEN"
         else:
             heater.off()
             cooler.off()
-            # Voor Groen zetten we nu het eerste getal op 255!
             status_led.fill((255, 0, 0)) 
             heater_status = 0
             status_text = "OPTIMAAL"
 
-       # C. Licht Controle (Proportioneel dimmen met PWM)
+       # C. Licht Controle
         if current_lux < target_lux:
             # 1. Bereken hoeveel lux we tekortkomen
             lux_verschil = target_lux - current_lux
-            
-            # 2. Bepaal bij welk tekort de lampen op volle 100% moeten branden
-            # (Bijvoorbeeld: als we 500 lux tekortkomen, moeten ze vol aan)
-            max_lux_verschil = 500.0 
-            
-            # 3. Bereken de sterkte (een getal tussen 0.0 en 1.0)
+            max_lux_verschil = 300.0 
             dim_waarde = lux_verschil / max_lux_verschil
-            
-            # 4. Veiligheidscheck: zorg dat hij nooit boven de 1.0 (100%) probeert te gaan
             if dim_waarde > 1.0:
                 dim_waarde = 1.0
                 
-            # 5. Zet de groeilampen aan op de berekende sterkte
             led1.value = dim_waarde
             led2.value = dim_waarde
         else:
-            # Het is al licht genoeg in de broeikas!
             led1.value = 0.0
             led2.value = 0.0
             
@@ -179,7 +167,7 @@ try:
         oled.image(image)
         oled.show()
 
-        # E. Terminal Output (NIEUW!)
+        # E. Terminal Output
         print(f"[Modus: {current_mode}] Temp: {current_temp:.1f}°C ({target_temp}) | Lux: {current_lux} ({target_lux}) | LED: {led_percentage}% | Klimaat: {status_text}")
 
         # F. Data naar InfluxDB sturen
@@ -194,7 +182,7 @@ try:
             
             write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
         except Exception:
-            pass # We negeren de Influx error in de terminal zodat hij niet volloopt als er geen internet is
+            pass 
 
         time.sleep(1)
 
@@ -210,4 +198,4 @@ except KeyboardInterrupt:
     status_led.fill((0, 0, 0))
     oled.fill(0)
     oled.show()
-    print("Klaar! Succes!")
+    print("Klaar!")
