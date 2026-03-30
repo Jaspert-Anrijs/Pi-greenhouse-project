@@ -176,18 +176,16 @@ try:
 
         # E. Terminal Output
         print(f"[Modus: {current_mode}] Temp: {current_temp:.1f}°C ({target_temp}) | Lux: {current_lux} ({target_lux}) | LED: {led_percentage}% | Klimaat: {status_text}")
-
-        # F. Data naar InfluxDB sturen
+# F. Data via Cloud MQTT sturen (In InfluxDB Line Protocol)
         try:
-            point = influxdb_client.Point("klimaat") \
-                .field("temperatuur", float(current_temp)) \
-                .field("lux", float(current_lux)) \
-                .field("doel_temp", float(target_temp)) \
-                .field("doel_lux", float(target_lux)) \
-                .field("led_percentage", float(led_percentage)) \
-                .field("heater_status", int(heater_status))
+            # We bouwen een zin in precies het formaat dat InfluxDB begrijpt:
+            # format: measurement field1=waarde,field2=waarde
+            line_protocol = f"klimaat temperatuur={current_temp:.1f},lux={current_lux},doel_temp={target_temp},doel_lux={target_lux},led_percentage={led_percentage},heater_status={heater_status}"
             
-            write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
+            # Schiet het de cloud in via MQTT!
+            mqtt_client.publish(MQTT_TOPIC, line_protocol)
+        except Exception as e:
+            print(f"MQTT Fout: {e}")
         except Exception:
             pass 
 
