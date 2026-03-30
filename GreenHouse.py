@@ -4,6 +4,7 @@ import busio
 import digitalio
 import neopixel
 import adafruit_bmp280
+import adafruit_bh1750
 import adafruit_ssd1306
 from PIL import Image, ImageDraw, ImageFont
 from gpiozero import Button, PWMLED, DigitalOutputDevice
@@ -27,6 +28,7 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 # ==========================================
 i2c = busio.I2C(board.SCL, board.SDA)
 bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c, address=0x76)
+bh1750 = adafruit_bh1750.BH1750(i2c)
 
 spi = busio.SPI(board.SCK, MOSI=board.MOSI)
 dc_pin = digitalio.DigitalInOut(board.D22)
@@ -97,7 +99,7 @@ try:
     while True:
         # A. Sensoren Uitlezen
         current_temp = bmp280.temperature
-        current_lux = 400
+        current_lux = bh1750.lux
         status_text = "OPTIMAAL"
 
         # B. Klimaat Controle
