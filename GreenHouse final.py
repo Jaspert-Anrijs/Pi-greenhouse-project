@@ -10,25 +10,9 @@ from PIL import Image, ImageDraw, ImageFont
 from gpiozero import Button, PWMLED, DigitalOutputDevice
 
 # ==========================================
-# 0. CLOUD MQTT INSTELLINGEN
+# 0. INFLUXDB INSTELLINGEN
 # ==========================================
-import paho.mqtt.client as mqtt
-
-# We gebruiken een gratis openbare cloud broker
-MQTT_BROKER = "broker.hivemq.com" 
-MQTT_PORT = 1883
-# BELANGRIJK: Maak hier een unieke naam van, bijv. je eigen naam!
-MQTT_TOPIC = "student_jouwnaam_greenhouse/klimaat" 
-
-# Start de MQTT verbinding
-mqtt_client = mqtt.Client()
-try:
-    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-    mqtt_client.loop_start() # Zorgt dat hij op de achtergrond netjes blijft draaien
-    print("✅ Succesvol verbonden met Cloud MQTT Broker!")
-except:
-    print("❌ Kon niet verbinden met MQTT Broker.")
-    import influxdb_client
+import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com" 
@@ -38,6 +22,25 @@ INFLUX_BUCKET = "greenhouse"
 
 client = influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
 write_api = client.write_api(write_options=SYNCHRONOUS)
+
+# ==========================================
+# 0.5 CLOUD MQTT INSTELLINGEN (Voor de docent!)
+# ==========================================
+import paho.mqtt.client as mqtt
+import json
+
+MQTT_BROKER = "broker.hivemq.com"  # Gratis openbare cloud broker
+MQTT_PORT = 1883
+MQTT_TOPIC = "student_greenhouse/klimaat_data" # Hier sturen we het naartoe
+
+# Maak de MQTT client aan en verbind met de cloud
+mqtt_client = mqtt.Client()
+try:
+    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    mqtt_client.loop_start() # Zorgt dat de MQTT verbinding stabiel blijft
+    print("✅ Verbonden met Cloud MQTT Broker (HiveMQ)!")
+except:
+    print("❌ Kon niet verbinden met MQTT Broker.")
 
 # ==========================================
 # 1. HARDWARE INSTELLINGEN
@@ -122,8 +125,7 @@ try:
         if current_temp < target_temp:
             heater.on()
             cooler.off()
-            # Stuur (Groen, Rood, Blauw)
-            status_led.fill((0, 255, 0)) 
+            status_led.fill((0, 255, 0)) # Groen, Rood, Blauw (Dus Rood in praktijk)
             heater_status = 1
             status_text = "VERWARMEN"
         elif current_temp > target_temp + 0.5:
@@ -135,13 +137,12 @@ try:
         else:
             heater.off()
             cooler.off()
-            status_led.fill((255, 0, 0)) 
+            status_led.fill((255, 0, 0)) # Groen in praktijk
             heater_status = 0
             status_text = "OPTIMAAL"
 
-       # C. Licht Controle
+        # C. Licht Controle
         if current_lux < target_lux:
-            # 1. Bereken hoeveel lux we tekortkomen
             lux_verschil = target_lux - current_lux
             max_lux_verschil = 300.0 
             dim_waarde = lux_verschil / max_lux_verschil
@@ -154,9 +155,7 @@ try:
             led1.value = 0.0
             led2.value = 0.0
             
-        # Bereken het percentage voor op het scherm en InfluxDB
-        led_percentage = int(led1.value * 100)
-            
+        # Bereken het percentage voor op het scherm en databases
         led_percentage = int(led1.value * 100)
 
         # D. OLED Scherm Updaten
@@ -187,18 +186,35 @@ try:
 
         # E. Terminal Output
         print(f"[Modus: {current_mode}] Temp: {current_temp:.1f}°C ({target_temp}) | Lux: {current_lux} ({target_lux}) | LED: {led_percentage}% | Klimaat: {status_text}")
-# F. Data via Cloud MQTT sturen (In InfluxDB Line Protocol)
+
+        # F. Data naar InfluxDB sturen (Jouw Dashboard)
         try:
-            # We bouwen een zin in precies het formaat dat InfluxDB begrijpt:
-            # format: measurement field1=waarde,field2=waarde
-            line_protocol = f"klimaat temperatuur={current_temp:.1f},lux={current_lux},doel_temp={target_temp},doel_lux={target_lux},led_percentage={led_percentage},heater_status={heater_status}"
+            point = influxdb_client.Point("klimaat") \
+                .field("temperatuur", float(current_temp)) \
+                .field("lux", float(current_lux)) \
+                .field("doel_temp", float(target_temp)) \
+                .field("doel_lux", float(target_lux)) \
+                .field("led_percentage", float(led_percentage)) \
+                .field("heater_status", int(heater_status))
             
-            # Schiet het de cloud in via MQTT!
-            mqtt_client.publish(MQTT_TOPIC, line_protocol)
-        except Exception as e:
-            print(f"MQTT Fout: {e}")
+            write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
         except Exception:
             pass 
+
+        # G. Data naar MQTT sturen (Voor de docent!)
+        try:
+            mqtt_payload = {
+                "temperatuur": round(current_temp, 1),
+                "lux": current_lux,
+                "doel_temp": target_temp,
+                "doel_lux": target_lux,
+                "led_percentage": led_percentage,
+                "status": status_text
+            }
+            # Zet de Python data om naar een JSON pakketje en stuur het weg
+            mqtt_client.publish(MQTT_TOPIC, json.dumps(mqtt_payload))
+        except Exception:
+            pass
 
         time.sleep(1)
 
