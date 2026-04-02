@@ -22,8 +22,3 @@ The system reads environmental data using I2C sensors, visualizes it on a local 
     * 1x LEDs (Grow lights, connected to PWM pins)
     * 1x WS2812 NeoPixel LED (Status indicator)
 * **Inputs**: 3x Pushbuttons (Up, Down, Mode) with 100kΩ physical pull-down resistors 
-
-1. **Clone the repository**:
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git)
-   cd YOUR_REPO_NAME
