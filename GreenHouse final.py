@@ -24,7 +24,7 @@ client = influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
 # ==========================================
-# 0.5 CLOUD MQTT INSTELLINGEN (Voor de docent!)
+# 0.5 CLOUD MQTT INSTELLINGEN
 # ==========================================
 import paho.mqtt.client as mqtt
 import json
@@ -33,11 +33,10 @@ MQTT_BROKER = "broker.hivemq.com"  # Gratis openbare cloud broker
 MQTT_PORT = 1883
 MQTT_TOPIC = "student_greenhouse/klimaat_data" # Hier sturen we het naartoe
 
-# Maak de MQTT client aan en verbind met de cloud
+# Maakt de MQTT client aan en verbind met de cloud
 mqtt_client = mqtt.Client()
 try:
     mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-    mqtt_client.loop_start() # Zorgt dat de MQTT verbinding stabiel blijft
     print("✅ Verbonden met Cloud MQTT Broker (HiveMQ)!")
 except:
     print("❌ Kon niet verbinden met MQTT Broker.")
@@ -131,7 +130,7 @@ try:
         elif current_temp > target_temp + 0.5:
             heater.off()
             cooler.on()
-            status_led.fill((0, 0, 255))
+            status_led.fill((0, 0, 255)) # Rood in praktijk
             heater_status = -1
             status_text = "KOELEN"
         else:
@@ -155,7 +154,7 @@ try:
             led1.value = 0.0
             led2.value = 0.0
             
-        # Bereken het percentage voor op het scherm en databases
+        # Berekent het percentage voor op het scherm en database
         led_percentage = int(led1.value * 100)
 
         # D. OLED Scherm Updaten
@@ -187,7 +186,7 @@ try:
         # E. Terminal Output
         print(f"[Modus: {current_mode}] Temp: {current_temp:.1f}°C ({target_temp}) | Lux: {current_lux} ({target_lux}) | LED: {led_percentage}% | Klimaat: {status_text}")
 
-        # F. Data naar InfluxDB sturen (Jouw Dashboard)
+        # F. Data naar InfluxDB sturen
         try:
             point = influxdb_client.Point("klimaat") \
                 .field("temperatuur", float(current_temp)) \
@@ -201,7 +200,7 @@ try:
         except Exception:
             pass 
 
-        # G. Data naar MQTT sturen (Voor de docent!)
+        # G. Data naar MQTT sturen
         try:
             mqtt_payload = {
                 "temperatuur": round(current_temp, 1),
@@ -211,7 +210,7 @@ try:
                 "led_percentage": led_percentage,
                 "status": status_text
             }
-            # Zet de Python data om naar een JSON pakketje en stuur het weg
+            # dit zet de Python data om naar een JSON pakketje en stuur het weg
             mqtt_client.publish(MQTT_TOPIC, json.dumps(mqtt_payload))
         except Exception:
             pass
